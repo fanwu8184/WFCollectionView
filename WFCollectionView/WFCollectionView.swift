@@ -13,12 +13,8 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
     
     private let reuseIdentifier = "WFCell"
     
-    var wfCollections = [WFColection]() {
-        didSet {
-            contentCollectionView.reloadData()
-        }
-    }
-    var wfCollectionsIsManipulated: (([WFColection])->())?
+    private var wfCollections = [WFColection]()
+    var wfCollectionsIsModified: (([WFColection])->())?
     
     var widthFactorOfCell: CGFloat = 3.5 {
         didSet {
@@ -132,17 +128,7 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
         }
     }
     
-    // MARK: Gesture Recognizers' Functions
-    @objc private func panAction(_ sender: UIPanGestureRecognizer) {
-        if let view = sender.view {
-            let translation = sender.translation(in: self)
-            stopAllWigglingButtonLeadingConstraint?.constant = view.frame.origin.x + translation.x
-            stopAllWigglingButtonTopConstraint?.constant = view.frame.origin.y + translation.y
-            sender.setTranslation(CGPoint.zero, in: self)
-        }
-    }
-    
-    // MARK: Miscellaneous Functions
+    // MARK: Wiggling And It's Related Button Functions
     func updateAllCellsWigglingStatus(_ wiggle: Bool) {
         wfCollections.forEach { (wfCollection) in
             wfCollection.isWiggling = wiggle
@@ -172,6 +158,22 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
         return stopAllWigglingButton
     }
     
+    // MARK: Gesture Recognizers' Functions
+    @objc private func panAction(_ sender: UIPanGestureRecognizer) {
+        if let view = sender.view {
+            let translation = sender.translation(in: self)
+            stopAllWigglingButtonLeadingConstraint?.constant = view.frame.origin.x + translation.x
+            stopAllWigglingButtonTopConstraint?.constant = view.frame.origin.y + translation.y
+            sender.setTranslation(CGPoint.zero, in: self)
+        }
+    }
+    
+    // MARK: Miscellaneous Functions
+    func setContent(_ content: [WFColection]) {
+        wfCollections = content
+        contentCollectionView.reloadData()
+    }
+    
     func insertItem(wfCollection: WFColection, at indexPath: IndexPath? = nil) {
         if cellsWigglingMode && wfCollections.first?.isWiggling == true {
             wfCollection.isWiggling = true
@@ -192,6 +194,7 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
                 contentCollectionView.insertItems(at: [defaultIndexPath])
                 wfCollections.append(wfCollection)
             }
+            wfCollectionsIsModified?(wfCollections)
         })
     }
     
@@ -199,7 +202,7 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
         if let indexPath = contentCollectionView.indexPath(for: cell) {
             contentCollectionView.performBatchUpdates({
                 wfCollections.remove(at: indexPath.row)
-                wfCollectionsIsManipulated?(wfCollections)
+                wfCollectionsIsModified?(wfCollections)
                 contentCollectionView.deleteItems(at: [indexPath])
             })
             
@@ -264,6 +267,6 @@ class WFCollectionView: BasicView, UICollectionViewDataSource, UICollectionViewD
         let wfCollection = wfCollections[sourceIndexPath.row]
         wfCollections.remove(at: sourceIndexPath.row)
         wfCollections.insert(wfCollection, at: destinationIndexPath.row)
-        wfCollectionsIsManipulated?(wfCollections)
+        wfCollectionsIsModified?(wfCollections)
     }
 }

@@ -51,30 +51,25 @@ class WFCollectionViewCell: BasicCollectionViewCell {
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(panAction))
     
     private var contentViewTopConstraint: NSLayoutConstraint?
-    private var contentViewBottomConstraint: NSLayoutConstraint?
     private var contentViewLeadingConstraint: NSLayoutConstraint?
-    private var contentViewTrailingConstraint: NSLayoutConstraint?
     private var deleteButtonWidthConstraint: NSLayoutConstraint?
     private var deleteButtonHeightConstraint: NSLayoutConstraint?
     
     override func setupViews() {
         super.setupViews()
-        //setupDeleteButton()
+        setupDeleteButton()
         addGestureRecognizer(longPressGesture)
     }
     
     private func setup(_ content: UIView) {
-        content.removeConstraints(content.constraints)
         addSubview(content)
         content.translatesAutoresizingMaskIntoConstraints = false
-        contentViewBottomConstraint = content.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0)
-        contentViewTrailingConstraint = content.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0)
+        content.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        content.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0).isActive = true
         contentViewTopConstraint = content.topAnchor.constraint(equalTo: self.topAnchor, constant: deleteButtonRadius)
         contentViewLeadingConstraint = content.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: deleteButtonRadius)
         contentViewTopConstraint?.isActive = true
-        contentViewBottomConstraint?.isActive = true
         contentViewLeadingConstraint?.isActive = true
-        contentViewTrailingConstraint?.isActive = true
     }
     
     private func setupDeleteButton() {
@@ -118,12 +113,14 @@ class WFCollectionViewCell: BasicCollectionViewCell {
     
     // MARK: Gesture Recognizers' Functions
     @objc private func longPressAction() {
-        wfCollection?.isWiggling = true
-        updateWiggling()
-        if wfCollectionView?.cellsWigglingMode == true {
-            wfCollectionView?.updateAllCellsWigglingStatus(true)
+        if wfCollection?.isWiggling == false {
+            wfCollection?.isWiggling = true
+            updateWiggling()
+            if wfCollectionView?.cellsWigglingMode == true {
+                wfCollectionView?.updateAllCellsWigglingStatus(true)
+            }
+            wfCollectionView?.setupStopAllWigglingButton()
         }
-        wfCollectionView?.setupStopAllWigglingButton()
     }
     
     @objc private func panAction(_ sender: UIPanGestureRecognizer) {
