@@ -4,7 +4,7 @@
 ![demo3](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo3.gif)
 ![demo4](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo4.gif)
 ![demo5](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo5.gif)
-![demo9](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo9.gif)
+![demo9](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo6.gif)
 ![demo7](https://github.com/fanwu8184/WFCollectionView/blob/master/Demos/demo7.gif)
 
 WFCollectionView is an easy to use and flexible Collection View with built in features for iOS development. What you need to take care are the collection view's content and it's setup.
